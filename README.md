@@ -16,3 +16,5 @@ Machine-readable product catalog and trust artifacts for [AOS-v0.1](https://gith
 | [`CONDUCT.md`](CONDUCT.md) | Reader guide for `CONDUCT.jsonl`: `public` vs `internal_only` evidence, limits, and non-KPI framing |
 
 **Audit badge program:** Free, opt-in, 90-day attestations — see [mcp-blast-radius BADGE_CRITERIA.md](https://github.com/aos-standard/mcp-blast-radius/blob/main/BADGE_CRITERIA.md).
+
+Maintainer: Tetsuroh Hori (Tetsurohhori)

@@ -5,7 +5,7 @@
     "fetch_registry_snapshot.py": "48b0e6df57fae4b9eded5dfefcb96b87f9ac05740c69c26408722df803ce772a",
     "registry_capability_census.py": "31c0e854855de4c022f38b7ae61e6c045cf143f41d4fbde1b0e1e61205ab186e",
     "SERIES.md": "4a7d3d48dc1edb524e2ec1d1e31229ae8ee854ab0d9145e93609c22cca352b36",
-    "RUNS.jsonl": "ae821897ef59976fe4cda31272107e936bb35ab45acf7495c70f6d9a4592389a",
+    "RUNS.jsonl": "89404bcac591474f470a54c4135b2ceb663d67f61059cdc2d8599b1c12405d1e",
     "locality_moves_2026-08-28.jsonl": "d104f1140f6368114869b311344580a2cff7c42ad172b0e5e886fe048f138340",
     "locality_adds_2026-08-28.jsonl": "5c6b1aa34f5760ec6b073aa80ff5c0b34ae616721430260b07177081a27c3a5a",
     "locality_lists_2026-08-28.provenance.json": "1a8429e13885cc0d326eb1b00baf0291b24fbb223ff23e9bace0175653c2aa0e",

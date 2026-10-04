@@ -2,6 +2,12 @@
 
 Append-only record of verification conduct by aos-standard: defects we found in our own
 tools, defects others broke open, external refutations, and tag-integrity events.
+`claim_contradicted_published` is a published observation that disagreed with the
+target's own declaration. `self_found` stays a record of our own defect.
+A published independent reproduction of **someone else's** stated claim, where the claim held
+within the stated coverage. Not an endorsement of the target's work as a whole, and not a
+statement about correctness — only that the stated property reproduced under the conditions
+recorded in the row.
 
 Companion file: [`CONDUCT.jsonl`](CONDUCT.jsonl) (one JSON object per line).
 
@@ -28,6 +34,9 @@ Companion file: [`CONDUCT.jsonl`](CONDUCT.jsonl) (one JSON object per line).
 Mixing these shapes is a schema failure: export refuses the file. Readers are not asked to
 “be careful”; the format makes the classes mechanically distinct.
 
+`claim_reproduced_published` is `evidence: public` only. Its `resolution.state` is
+`unresolved` only, meaning nothing to resolve: no defect was found.
+
 ## How to verify a `digest` (reader recipe)
 
 Read each row's `digest.of`. Two shapes are in use:
@@ -36,6 +45,8 @@ Read each row's `digest.of`. Two shapes are in use:
 
 `of` names an issues-comments API URL. Hash **only** `payload["body"]` — not the full JSON
 (reactions, `updated_at`, and similar fields are intentionally excluded).
+An issue body is the same material as a comment body: hash `payload["body"]` from the issues API
+the same way, and do not append a trailing newline.
 
 ```bash
 curl -sS https://api.github.com/repos/<owner>/<repo>/issues/comments/<id> \
@@ -44,6 +55,23 @@ curl -sS https://api.github.com/repos/<owner>/<repo>/issues/comments/<id> \
 
 Compare the printed hex to `digest.sha256`. A reaction emoji on the comment must not change it.
 A body edit must change it (that is a real content change).
+
+### C. One probes `rows.jsonl` line
+
+`of` names the public file URL and the row `name`. Hash the UTF-8 bytes of that
+single JSON line, excluding the line terminator.
+
+```bash
+python3 -c '
+import hashlib, json, sys, urllib.request
+url, name = sys.argv[1], sys.argv[2]
+text = urllib.request.urlopen(url).read().decode("utf-8")
+for line in text.splitlines():
+    if json.loads(line).get("name") == name:
+        print(hashlib.sha256(line.encode("utf-8")).hexdigest())
+        break
+' 'https://raw.githubusercontent.com/aos-standard/catalog/main/probes/batch_2026-09-28/rows.jsonl' 'io.github.bleedmode/dearuser'
+```
 
 ### B. `git ls-remote --tags` lines (tag integrity)
 

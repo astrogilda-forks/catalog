@@ -1,7 +1,10 @@
 {
   "catalog_version": "1.0.0",
-  "generated_at": "2026-10-01T00:13:55.235134+00:00",
+  "generated_at": "2026-10-04T23:41:13.251574+00:00",
   "publisher": "aos-standard",
+  "maintainers": [
+    "Tetsurohhori"
+  ],
   "spec": "https://github.com/aos-standard/AOS-spec",
   "total_products": 2,
   "products": [
