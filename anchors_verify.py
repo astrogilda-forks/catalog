@@ -82,9 +82,11 @@ def fetch_url(url: str, *, timeout: float = 60.0) -> bytes:
 
 
 def bytes_to_lines(content: bytes) -> list[bytes]:
-    """Split on b'\\n' only; each line includes its trailing newline byte.
+    """Split on b'\\n' only; each line carries the newline byte it stores on disk.
 
     No Unicode line-boundary normalization — raw stored bytes are preserved.
+    A final line that stores no trailing newline byte is returned as stored: no
+    byte is appended, so its digest does not match the same line carrying one.
     Separator-only segments are retained (never silently skipped).
     """
     if not content:
@@ -98,7 +100,7 @@ def bytes_to_lines(content: bytes) -> list[bytes]:
         if is_last and not content.endswith(b"\n"):
             if not part:
                 _fail("empty anchor line")
-            lines.append(part + b"\n")
+            lines.append(part)
         else:
             lines.append(part + b"\n")
     return lines

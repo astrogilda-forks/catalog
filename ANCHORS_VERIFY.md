@@ -7,11 +7,11 @@ Standalone checker for [`ANCHORS.jsonl`](ANCHORS.jsonl) and [`ANCHORS.jsonl.dige
 The canonical distribution is a **single file** fetched and executed directly. **Zero dependencies.**
 
 ```bash
-curl -sLO https://raw.githubusercontent.com/aos-standard/catalog/anchors-verify-v0.8/anchors_verify.py
+curl -sLO https://raw.githubusercontent.com/aos-standard/catalog/anchors-verify-v0.11/anchors_verify.py
 python3 anchors_verify.py --self-test
 ```
 
-To pin a release, reference tag **`anchors-verify-v0.8`** in the URL (not `main`). Older tags (`anchors-verify-v0.7`, `v0.6`, `v0.5`, `v0.4`, `v0.2`, `v0.1`) remain available for history. **Published tags are never re-pointed.**
+To pin a release, reference tag **`anchors-verify-v0.11`** in the URL (not `main`). Older tags (`anchors-verify-v0.10`, `v0.9`, `v0.8`, `v0.7`, `v0.6`, `v0.5`, `v0.4`, `v0.2`, `v0.1`) remain available for history. **Published tags are never re-pointed.**
 
 **`anchors-verify-v0.3` was published pointing at the wrong commit and does not implement the `VERIFY PARTIAL` / `VERIFY UNPINNED` outcomes documented here. It is superseded by `v0.4` and left in place rather than re-pointed, because re-pointing a published tag would break the reproducibility this verifier exists to check.**
 
@@ -23,14 +23,16 @@ To pin a release, reference tag **`anchors-verify-v0.8`** in the URL (not `main`
 
 **Record typing (v0.9):** Same input bytes may yield a different outcome under a newer verifier. A stream that was **`VERIFY OK` or `VERIFY PARTIAL` under `v0.8` can become `VERIFY FAILED` under `v0.9`** when a recognized boundary event carries a record-shaped **key** (`asset_id`) of any JSON type, when a no-event row is missing `asset_id` or `asset_id` is not a string, or when an integer field (`line_count`, `byte_length`, `size_bytes`, `rows`) is a JSON `true`/`false`. Classification uses **key presence**, not value type. Rows that are neither a recognized boundary event nor a record are malformed — they do not silently drop out of the attested unit. **Tags are not re-pointed.** This is a typing narrowing, not a security-impact claim.
 
+**Unterminated final line (v0.11):** Same input bytes may yield a different outcome under a newer verifier. A stream whose final line has no trailing newline byte was hashed as if it had one through v0.10; under v0.11 it is hashed as stored, so such a stream that was VERIFY PARTIAL can become VERIFY FAILED (digest mismatch at the final line). Tags are not re-pointed. This is a byte-faithfulness fix against the text as written, not a security-impact claim.
+
 This verifier is **not distributed as a PyPI package.** Requiring `pip install` would ask auditors to trust the supply chain; a single file can be read in full before execution.
 
 **Run (copy-paste — tag-fixed, reproducible):**
 
 ```bash
-curl -sLO https://raw.githubusercontent.com/aos-standard/catalog/anchors-verify-v0.8/anchors_verify.py
-curl -sLO https://raw.githubusercontent.com/aos-standard/catalog/anchors-verify-v0.8/ANCHORS.jsonl
-curl -sLO https://raw.githubusercontent.com/aos-standard/catalog/anchors-verify-v0.8/ANCHORS.jsonl.digests.json
+curl -sLO https://raw.githubusercontent.com/aos-standard/catalog/anchors-verify-v0.11/anchors_verify.py
+curl -sLO https://raw.githubusercontent.com/aos-standard/catalog/anchors-verify-v0.11/ANCHORS.jsonl
+curl -sLO https://raw.githubusercontent.com/aos-standard/catalog/anchors-verify-v0.11/ANCHORS.jsonl.digests.json
 python3 anchors_verify.py \
   --anchors-url file://$(pwd)/ANCHORS.jsonl \
   --digests-url file://$(pwd)/ANCHORS.jsonl.digests.json \
@@ -60,6 +62,8 @@ python3 anchors_verify.py \
 
 **Contract change (v0.4):** Prior releases through `v0.2` (and the mis-pointed `v0.3` tag) treated partial attestation like full success (`VERIFY OK` with `attested_prefix_lines < lines`). **`v0.4` adds distinct outcomes and exit codes.**
 
+**Contract change (v0.11):** The final line is hashed as stored. No byte is added before hashing.
+
 **Contract change (v0.9):** Row interpretation treats a no-event row as a record and fails closed if `asset_id` is missing or not a string, or if integer fields are JSON booleans. A recognized boundary event that carries the `asset_id` **key** (any value type) is malformed. Unattested tip rows of any shape cannot produce `VERIFY OK`.
 
 **Contract change (v0.8):** Row interpretation fails closed before boundary or attested-unit checks. A recognized boundary event (`witness_ref_introduced`, `signature_suite_introduced`, `position_binding_introduced`) that also carries record-shaped fields (`asset_id`) is **malformed**, not classified as either side. `rule_version` is accepted only from the event correspondence table (`witness-ref-v1` / `signature-suite-v1` / `position-binding-v1`); any other value fails closed.
@@ -81,6 +85,7 @@ python3 anchors_verify.py \
 ## What it checks
 
 - Each JSONL line SHA-256 matches the sidecar entry for that line index. Hashes cover the **full stored line including the trailing newline byte**, computed on **raw bytes** (not Unicode-normalized line strings).
+- A final line with no trailing newline byte is hashed as stored; a digest computed over the same line with a newline byte does not match it.
 - Lines are split on **`b"\n"` only** — no `str.splitlines()` normalization.
 - Invalid or separator-only lines are **not skipped**; they fail closed via digest mismatch or parse rejection.
 - Boundary rules for `witness_ref_introduced`, `signature_suite_introduced`, and `position_binding_introduced` (field presence before/after each event).
