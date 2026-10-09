@@ -1,0 +1,36 @@
+name: anchor-stream-corpus
+# Runs the 32-member anchor-stream corpus from probityai/agent-evidence-vectors
+# against this repository's anchors_verify.py. It is a ratchet: it fails when a
+# member that agreed in conformance/anchor-stream-v0.11.json stops agreeing,
+# and stays silent about the four members recorded as disagreeing.
+# The corpus carries the witness bytes each member needs and the runner blocks
+# network access, so the result does not depend on what the platform serves.
+on:
+  push:
+    paths: ["anchors_verify.py", "conformance/anchor-stream-*.json", ".github/workflows/anchor-stream-corpus.yml"]
+  pull_request:
+    paths: ["anchors_verify.py", "conformance/anchor-stream-*.json", ".github/workflows/anchor-stream-corpus.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ratchet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out the corpus at a pinned commit (tag v0.17.5)
+        uses: actions/checkout@v4
+        with:
+          repository: probityai/agent-evidence-vectors
+          ref: 8e9cc6c3edc915a9248426a0b5a33612f6e11319
+          path: agent-evidence-vectors
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: No member that agreed with anchors-verify-v0.11 has stopped agreeing
+        run: |
+          python3 agent-evidence-vectors/vectors-anchor-stream/run_verifier.py \
+            --verifier anchors_verify.py \
+            --label anchors-verify-v0.11 \
+            --expect conformance/anchor-stream-v0.11.json
