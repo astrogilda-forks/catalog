@@ -18,11 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Check out the corpus at a pinned commit (tag v0.17.6)
+      - name: Check out the corpus at a pinned commit (tag v0.17.7)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: probityai/agent-evidence-vectors
-          ref: 55322cb7ee5579e6bf5584e9ec870ea1b565a35c
+          ref: c17368578a107169174137d37830a4e7ed4133c0
           path: agent-evidence-vectors
           persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
