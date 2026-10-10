@@ -17,15 +17,15 @@ jobs:
   ratchet:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Check out the corpus at a pinned commit (tag v0.17.5)
-        uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check out the corpus at a pinned commit (tag v0.17.6)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: probityai/agent-evidence-vectors
-          ref: 8e9cc6c3edc915a9248426a0b5a33612f6e11319
+          ref: 55322cb7ee5579e6bf5584e9ec870ea1b565a35c
           path: agent-evidence-vectors
           persist-credentials: false
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - name: No member that agreed with anchors-verify-v0.11 has stopped agreeing
